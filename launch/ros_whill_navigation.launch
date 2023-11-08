@@ -1,0 +1,28 @@
+<launch>
+    <arg name="map_file" default="$(find ros_whill)/maps/mymap.yaml"/>
+    <arg name="open_rviz" default="true"/>
+    <arg name="move_forward_only" default="false"/>
+
+    <include file="$(find ros_whill)/launch/ros_whill.launch" />
+
+    <include file="$(find rplidar_ros)/launch/rplidar_a2m8.launch" />
+    <!-- Filter laser_scan -->
+    <include file="$(find ros_whill)/launch/laser_filter.launch" />
+    <!-- tf base_link -> laser -->
+    <node pkg="tf" type="static_transform_publisher" name="lidar_broadcaster" args="0 0 0 0 0 0 base_link laser 100" />
+    <!-- AMCL -->
+    <include file="$(find ros_whill)/launch/amcl.launch">
+        <ard name="scan_topic" value="scan_filtered"/>
+        <arg name="initial_pose_x" value="-3.0"/>
+        <arg name="initial_pose_y" value="1.0"/>
+    </include>
+
+    <include file="$(find ros_whill)/launch/move_base.launch">
+        <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+    </include>
+
+    <group if="$(arg open_rviz)"> 
+        <node pkg="rviz" type="rviz" name="rviz" required="true"
+              args="-d $(find ros_whill)/rviz/ros_whill_slam.rviz"/>
+    </group>
+</launch>

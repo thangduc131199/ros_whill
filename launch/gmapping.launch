@@ -1,0 +1,11 @@
+<launch>
+  <!-- Gmapping -->
+  <arg name="scan_topic"     default="/scan"/>
+  <node pkg="gmapping" type="slam_gmapping" name="ros_whill_slam_gmapping" output="screen">
+    <!-- <param name="base_frame" value="$(arg set_base_frame)"/>
+    <param name="odom_frame" value="$(arg set_odom_frame)"/> -->
+    <!-- <param name="map_frame"  value="$(arg set_map_frame)"/> -->
+    <remap from="/scan" to="$(arg scan_topic)" />
+    <rosparam command="load" file="$(find ros_whill)/config/gmapping_params.yaml" />
+  </node>
+</launch>

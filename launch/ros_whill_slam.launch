@@ -1,0 +1,20 @@
+<launch>
+    <arg name="open_rviz" default="true"/>
+    <include file="$(find ros_whill)/launch/ros_whill.launch" />
+
+    <include file="$(find rplidar_ros)/launch/rplidar_a2m8.launch" />
+    <!-- Filter laser_scan -->
+    <include file="$(find ros_whill)/launch/laser_filter.launch" />
+    <!-- tf base_link -> laser -->
+    <node pkg="tf" type="static_transform_publisher" name="lidar_broadcaster" args="0 0 0 0 0 0 base_link laser 100" />
+    <!-- Gmapping-->
+    <include file="$(find ros_whill)/launch/gmapping.launch" >
+        <arg name="scan_topic" value="/scan_filtered"/>
+    </include>
+
+    <group if="$(arg open_rviz)"> 
+        <node pkg="rviz" type="rviz" name="rviz" required="true"
+              args="-d $(find ros_whill)/rviz/ros_whill_slam.rviz"/>
+    </group>
+
+</launch>
